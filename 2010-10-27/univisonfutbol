@@ -1,0 +1,45 @@
+
+	unvisionfutbol = "http://fifawc2-f.akamaihd.net" ++ {
+		response = http.GET "..." {"Referer": "..."} ? statusCode == 200
+		matches = regexp.match(r"/[a-zA-Z0-9_@]+\?primaryToken=[a-z0-9_]+", response.body)
+		matches[0]
+	}
+
+The previous code is a perfect example of automatic mode switching. `univisionfutbol` is a dynamic
+function—that is, it may (and in this case, it does) give a different answer each time it is run.
+
+The outmost expression is
+
+	"http://fifawc2-f.akamaihd.net" ++ {...}
+
+which is of type
+
+	string ++ dynamic string = dynamic string
+
+because the language knows that
+
+	x [a] ++ y [dynamic a] = x ++ y // TODO: Revise syntax. It is not very clear what we are doing.
+	// TODO: What I mean to do is express it in Haskelly terms. But it might be worth it to simply
+	// stay away from that during the design of the language.
+
+Again, the first expression in {...} is
+
+	response = http.GET "..." {"Referer": "..."} ? statusCode == 200
+
+which is of type
+	
+	maybe response = response ? condition
+
+And the second expression
+
+	matches = regexp.match(r"/[a-zA-Z0-9_@]+\?primaryToken=[a-z0-9_]+", response.body)
+
+has the type
+
+	maybe list strings = regexp.match(regexp, maybe string)
+
+, even though regexp.match is only explicitly defined with
+
+	list strings = regexp.match(regexp, string)
+
+The definition of maybe (TODO: or the language?) enables the other uses.

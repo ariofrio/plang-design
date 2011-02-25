@@ -1,0 +1,8 @@
+
+GET "/" = readWithContentType "index.html"
+
+GET "/blog/%{year}/%{month}/%{slug}" = {
+	post = unique << blog.posts ?? .year == time.year.fromLong year \
+		?? .month == time.month.fromLong month ?? .slug == slug
+	post.output
+}

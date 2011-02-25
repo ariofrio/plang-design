@@ -1,0 +1,26 @@
+
+	archive dir = {
+		allFiles = os.listdir dir
+		oldFiles = allFiles ?? os.stat.mtime < (time.now - 30 time.std.days)
+		forEachIn oldFiles: file {
+			timeModified = os.stat.mtime file
+			subdir = path.join(dir, timeModified.year, timeModified.month.long)
+			[filesystem.createDirectoryRecursively(subdir),
+			filesystem.move(file, subdir)]
+		}
+	}
+
+	archive dir = forEachIn (os.listdir dir): file {
+		if os.stat.mtime file < time.now - 30 time.std.days: {
+			timeModified = os.stat.mtime file
+			subdir = path.join(dir, timeModified.year, timeModified.month.long)
+			[filesystem.createDirectoryRecursively(subdir),
+			filesystem.move(file, subdir)]
+		} else {}
+	}
+
+	archive dir :: filesystem.directory → list filesystem.filesystemAction
+	
+
+	archive file :: File -> [FilesystemAction]
+	
